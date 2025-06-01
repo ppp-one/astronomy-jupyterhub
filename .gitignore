@@ -1,0 +1,161 @@
+# JupyterHub Configuration and Runtime Files
+jupyterhub.sqlite
+jupyterhub_cookie_secret
+*.log
+*.pid
+
+# Docker and Container Data
+.docker/
+docker-compose.override.yml
+.env
+
+# JupyterHub Data and User Files
+student_work/*/
+!student_work/.gitkeep
+notebooks/.ipynb_checkpoints/
+**/.ipynb_checkpoints/
+
+# Python Cache and Virtual Environments
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual Environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# IDE and Editor Files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# Jupyter Notebook Files
+.ipynb_checkpoints/
+*.ipynb_checkpoints
+.jupyter/
+
+# Scientific Computing and Data Files
+*.fits
+*.fit
+*.fts
+*.csv
+*.h5
+*.hdf5
+*.nc
+*.npz
+
+# Backup and Temporary Files
+*.bak
+*.tmp
+*.temp
+*.old
+*~
+.#*
+#*#
+
+# SSL Certificates and Keys
+*.pem
+*.key
+*.crt
+*.csr
+ssl/
+certs/
+
+# Database Files
+*.db
+*.sqlite
+*.sqlite3
+
+# Configuration Files with Secrets
+config.yaml
+secrets.yaml
+.secrets
+credentials.json
+
+# Docker Volume Data
+volumes/
+data/volumes/
+
+# MacOS Specific
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+._*
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+
+# Windows Specific
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+*.stackdump
+[Dd]esktop.ini
+$RECYCLE.BIN/
+*.cab
+*.msi
+*.msix
+*.msm
+*.msp
+*.lnk
+
+# Linux Specific
+*~
+.fuse_hidden*
+.directory
+.Trash-*
+.nfs*
+
+# Prose Package Specific
+.prose/
+.astropy/
+.cache/
+
+# Large Data Files (but keep small sample data)
+data/images/
+!data/images/.gitkeep
+!data/*.csv
+
+# Logs and Monitoring
+logs/
+*.log
+*.out
+*.err
+
+# Backup Scripts Output
+backups/
+*.tar.gz
+*.zip

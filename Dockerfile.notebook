@@ -1,0 +1,38 @@
+FROM jupyter/minimal-notebook:latest
+
+# Switch to root to install packages
+USER root
+
+# Install git and build tools (needed for pip install from GitHub and compiling dependencies)
+RUN apt-get update && apt-get install -y \
+    git \
+    build-essential \
+    gcc \
+    g++ \
+    && rm -rf /var/lib/apt/lists/*
+
+# Switch back to jovyan user
+USER jovyan
+
+# Install essential Python data science libraries (minimal set)
+RUN pip install --no-cache-dir \
+    numpy \
+    pandas \
+    matplotlib \
+    astropy \
+    scipy \
+    photutils \
+    psutil \
+    tqdm  \
+    celerite2 \
+    seaborn \
+    jupyter \
+    ipywidgets
+
+# Install prose library from GitHub (with dependencies first, then fresh session install)
+WORKDIR /tmp_prose
+RUN git clone https://github.com/ppp-one/prose.git
+RUN pip install -qq -e prose
+
+# Ensure the notebook server starts in the correct directory
+WORKDIR /home/jovyan

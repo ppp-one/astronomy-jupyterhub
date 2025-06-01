@@ -1,0 +1,38 @@
+services:
+  # Build the custom notebook image
+  notebook:
+    build:
+      context: .
+      dockerfile: Dockerfile.notebook
+    image: custom-minimal-notebook:latest
+    # This service doesn't run, it just builds the image
+    command: "true"
+    
+  jupyterhub:
+    build: .
+    container_name: jupyterhub
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./jupyterhub_config.py:/srv/jupyterhub/jupyterhub_config.py
+      - ./notebooks:/srv/jupyterhub/notebooks:ro
+      - ./data:/srv/jupyterhub/data:ro
+      - ./student_work:/srv/jupyterhub/student_work:rw
+      - jupyterhub-data:/srv/jupyterhub
+      - /var/run/docker.sock:/var/run/docker.sock:rw
+    environment:
+      - DOCKER_NOTEBOOK_IMAGE=custom-minimal-notebook:latest
+      - DOCKER_NETWORK_NAME=astronomy-jupyterhub_default
+      - JUPYTERHUB_HOST_PATH=${PWD}
+    networks:
+      - default
+    restart: unless-stopped
+    depends_on:
+      - notebook
+
+volumes:
+  jupyterhub-data:
+
+networks:
+  default:
+    driver: bridge
