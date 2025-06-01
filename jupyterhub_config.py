@@ -103,64 +103,69 @@ c.JupyterHub.hub_connect_ip = "jupyterhub"
 # Enable spawner debug mode
 c.DockerSpawner.debug = True
 
+# In your jupyterhub_config.py, add these lines:
+c.DockerSpawner.environment = {
+    'JUPYTER_RUNTIME_DIR': '/tmp/jupyter-runtime',
+    'JUPYTER_DATA_DIR': '/tmp/jupyter-data',
+}
 
-# Pre-spawn hook to create student work directories
+c.DockerSpawner.pre_spawn_cmd = [
+    'sh', '-c', 
+    'mkdir -p /tmp/jupyter-runtime /tmp/jupyter-data && '
+    'chmod 755 /tmp/jupyter-runtime /tmp/jupyter-data'
+]
+
+
+# Alternative version with more robust Windows permissions handling
 def pre_spawn_hook(spawner):
-    """Create student work directory on host filesystem"""
+    """Create student work directory with advanced Windows permissions support"""
     import os
     import stat
-
+    import platform
+    
     username = spawner.user.name
-    # Use the mounted path inside the JupyterHub container
-    work_dir = f"/srv/jupyterhub/student_work/{username}"
-
+    
+    # Platform-specific path handling
+    if platform.system() == "Windows":
+        work_dir = os.path.join("C:", "srv", "jupyterhub", "student_work", username)
+    else:
+        work_dir = f"/srv/jupyterhub/student_work/{username}"
+    
     # Create the student's work directory if it doesn't exist
-    os.makedirs(work_dir, mode=0o755, exist_ok=True)
-
-    # Set proper permissions (readable/writable by user)
     try:
-        os.chmod(
-            work_dir,
-            stat.S_IRWXU | stat.S_IRGRP | stat.S_IXGRP | stat.S_IROTH | stat.S_IXOTH,
-        )
+        os.makedirs(work_dir, exist_ok=True)
         spawner.log.info(f"Created/verified work directory: {work_dir}")
     except Exception as e:
+        spawner.log.error(f"Failed to create work directory {work_dir}: {e}")
+        return
+    
+    # Set permissions based on platform
+    try:
+        if platform.system() == "Windows":
+            # For Windows, we can try to use the subprocess module to set permissions
+            # using icacls (if more granular control is needed)
+            import subprocess
+            try:
+                # Grant full control to the current user
+                # This is optional and may require admin privileges
+                subprocess.run([
+                    "icacls", work_dir, "/grant", f"{os.getlogin()}:(F)"
+                ], check=False, capture_output=True)
+                spawner.log.info(f"Set Windows permissions for: {work_dir}")
+            except Exception as icacls_error:
+                spawner.log.debug(f"Could not set Windows ACL permissions: {icacls_error}")
+        else:
+            # Unix-style permissions
+            os.chmod(
+                work_dir,
+                stat.S_IRWXU | stat.S_IRGRP | stat.S_IXGRP | stat.S_IROTH | stat.S_IXOTH,
+            )
+            spawner.log.info(f"Set Unix permissions for: {work_dir}")
+    except Exception as e:
         spawner.log.warning(f"Could not set permissions on {work_dir}: {e}")
-
+        # Directory still exists and should be usable even without explicit permissions
 
 c.DockerSpawner.pre_spawn_hook = pre_spawn_hook
-
-
-# Post-spawn hook to copy template notebooks
-def post_spawn_hook(spawner):
-    """Copy template notebooks to user's work directory"""
-    import subprocess
-    import time
-
-    # Copy template notebooks to user's work directory
-    username = spawner.user.name
-    container_name = f"jupyter-{username}"
-
-    # Wait a moment for container to be fully ready
-    time.sleep(2)
-
-    # Commands to run in the container after spawn
-    commands = [
-        f"docker exec {container_name} bash -c 'cp -r /home/jovyan/templates/* /home/jovyan/work/ 2>/dev/null || true'",
-        f"docker exec {container_name} bash -c 'chown -R jovyan:users /home/jovyan/work/ 2>/dev/null || true'",
-    ]
-
-    for cmd in commands:
-        try:
-            subprocess.run(cmd, shell=True, check=False, timeout=30)
-            spawner.log.info(f"Executed post-spawn command: {cmd}")
-        except Exception as e:
-            spawner.log.warning(
-                f"Post-spawn command failed (non-critical): {cmd}, error: {e}"
-            )
-
-
-c.DockerSpawner.post_start_hook = post_spawn_hook
 
 # Logging
 c.JupyterHub.log_level = "INFO"

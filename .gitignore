@@ -145,9 +145,7 @@ $RECYCLE.BIN/
 .cache/
 
 # Large Data Files (but keep small sample data)
-data/images/
-!data/images/.gitkeep
-!data/*.csv
+data/
 
 # Logs and Monitoring
 logs/

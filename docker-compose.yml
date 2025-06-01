@@ -23,7 +23,7 @@ services:
     environment:
       - DOCKER_NOTEBOOK_IMAGE=custom-minimal-notebook:latest
       - DOCKER_NETWORK_NAME=astronomy-jupyterhub_default
-      - JUPYTERHUB_HOST_PATH=${PWD}
+      - JUPYTERHUB_HOST_PATH=${PWD:-C:\\Users\\Admin\\Documents\\GitHub\\astronomy-jupyterhub}
     networks:
       - default
     restart: unless-stopped
