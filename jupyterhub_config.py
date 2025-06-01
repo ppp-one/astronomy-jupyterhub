@@ -90,8 +90,8 @@ c.JupyterHub.db_url = "sqlite:///jupyterhub.sqlite"
 c.JupyterHub.cookie_secret_file = "/srv/jupyterhub/cookie_secret"
 
 # Logo and custom templates
-c.JupyterHub.logo_file = "/srv/jupyterhub/logo.png"
-c.JupyterHub.template_paths = ["/srv/jupyterhub/templates"]
+# c.JupyterHub.logo_file = "/srv/jupyterhub/logo.png"  # Logo file not available
+# c.JupyterHub.template_paths = ["/srv/jupyterhub/templates"]
 
 # Shutdown settings
 c.JupyterHub.cleanup_servers = True
