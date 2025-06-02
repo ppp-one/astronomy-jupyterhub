@@ -32,10 +32,10 @@ c.DockerSpawner.pull_policy = "never"
 host_path = os.environ.get("JUPYTERHUB_HOST_PATH", os.getcwd())
 
 c.DockerSpawner.volumes = {
-    f"{host_path}/notebooks": {
-        "bind": "/home/jovyan/read_only_example_notebooks",
-        "mode": "ro",
-    },
+    # f"{host_path}/notebooks": {
+    #     "bind": "/home/jovyan/notebooks",
+    #     "mode": "ro",
+    # },
     f"{host_path}/data": {
         "bind": "/home/jovyan/data",
         "mode": "ro",
@@ -117,6 +117,8 @@ def pre_spawn_hook(spawner):
     import stat
     import platform
 
+    spawner.log.info(f"Host path: {host_path}")
+
     username = spawner.user.name
 
     # Platform-specific path handling
@@ -170,3 +172,4 @@ def pre_spawn_hook(spawner):
 
 
 c.DockerSpawner.pre_spawn_hook = pre_spawn_hook
+c.DockerSpawner.post_start_cmd = f"cp -rn /tmp_notebooks/. /home/jovyan"

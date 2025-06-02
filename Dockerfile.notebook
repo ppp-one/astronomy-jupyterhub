@@ -22,6 +22,7 @@ RUN pip install --no-cache-dir \
     astropy \
     scipy \
     photutils \
+    batman-package \
     psutil \
     tqdm  \
     celerite2 \
@@ -33,6 +34,8 @@ RUN pip install --no-cache-dir \
 WORKDIR /tmp_prose
 RUN git clone https://github.com/ppp-one/prose.git
 RUN pip install -qq -e prose
+
+COPY ./notebooks /tmp_notebooks
 
 # Ensure the notebook server starts in the correct directory
 WORKDIR /home/jovyan
