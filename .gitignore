@@ -146,6 +146,7 @@ $RECYCLE.BIN/
 
 # Large Data Files (but keep small sample data)
 data/
+!data/.gitkeep
 
 # Logs and Monitoring
 logs/

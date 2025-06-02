@@ -89,12 +89,12 @@ def fit_quadratic_baseline(
 def transit_fit(
     time: np.ndarray,
     flux: np.ndarray,
-    duration_known: float = 0.07458333333333333,  # ~1.79 hours
-    period_known: float = 2.470613372,
-    transittime: float = 2455706.8297691,
-    a_guess: float = 7.903,
-    rp_guess: float = 0.1254,
-    inc_guess: float = 83.872,
+    duration_known: float,  # ~1.79 hours
+    period_known: float,
+    transittime: float,
+    a_guess: float,
+    rp_guess: float,
+    inc_guess: float,
     plot_results: bool = True,
 ) -> Tuple[np.ndarray, np.ndarray, dict]:
     """
@@ -110,19 +110,19 @@ def transit_fit(
         Time array (BJD)
     flux : np.ndarray
         Normalized flux measurements
-    duration_known : float, optional
-        Known transit duration in days (default: ~1.79 hours)
-    period_known : float, optional
+    duration_known : float
+        Known transit duration in days
+    period_known : float
         Known orbital period in days
-    transittime : float, optional
+    transittime : float
         Reference transit time (BJD)
-    a_guess : float, optional
+    a_guess : float
         Initial guess for semi-major axis in stellar radii
-    rp_guess : float, optional
+    rp_guess : float
         Initial guess for planet-to-star radius ratio
-    inc_guess : float, optional
+    inc_guess : float
         Initial guess for orbital inclination in degrees
-    plot_results : bool, optional
+    plot_results : bool
         Whether to create diagnostic plots
 
     Returns:

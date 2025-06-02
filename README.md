@@ -62,14 +62,13 @@ docker-compose down
 ```
 ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
 │   JupyterHub    │────│ Docker Spawner  │────│ Student Notebook│
-│   (Port 8000)   │    │                 │    │   Containers    │
+│   (Port 8090)   │    │                 │    │   Containers    │
 └─────────────────┘    └─────────────────┘    └─────────────────┘
          │                       │                       │
          └───────────────────────┼───────────────────────┘
                                  │
                     ┌─────────────────┐
                     │ Shared Volumes  │
-                    │ - templates/    │
                     │ - data/         │
                     └─────────────────┘
 ```
@@ -81,12 +80,7 @@ classroom-jupyterhub/
 ├── docker-compose.yml      # Main Docker Compose configuration
 ├── Dockerfile             # JupyterHub container definition
 ├── jupyterhub_config.py   # JupyterHub configuration
-├── notebooks/             # Template notebooks (mounted read-only)
-│   ├── 00_getting_started.ipynb
-│   └── 01_data_analysis_template.ipynb
 ├── data/                  # Shared datasets (mounted read-only)
-│   ├── student_performance.csv
-│   └── weather_data.csv
 └── README.md
 ```
 
@@ -117,7 +111,7 @@ classroom-jupyterhub/
 
 ### Monitoring Usage
 
-- **Admin Panel**: Login as `instructor` or `teacher` and access the admin panel
+- **Admin Panel**: Login as `instructor` and access the admin panel
 - **Container Logs**: `docker-compose logs jupyterhub`
 - **Resource Usage**: `docker stats`
 
@@ -125,20 +119,13 @@ classroom-jupyterhub/
 
 ### Security Settings
 
-**⚠️ Important**: The default configuration uses `DummyAuthenticator` which is suitable for controlled classroom environments but NOT for production use.
-
-For production environments, consider:
-- OAuth authentication (GitHub, Google, etc.)
-- LDAP/Active Directory integration
-- Custom user databases
-
 ### Resource Limits
 
 In `jupyterhub_config.py`:
 
 ```python
 c.DockerSpawner.mem_limit = '8G'      # Memory per student
-c.DockerSpawner.cpu_limit = 2.0       # CPU cores per student
+c.DockerSpawner.cpu_limit = 3.0       # CPU cores per student
 ```
 
 ### Custom Docker Images
@@ -166,7 +153,7 @@ Available images:
 - Ensure containers have read permissions
 
 **JupyterHub won't start:**
-- Check if port 8000 is already in use: `lsof -i :8000`
+- Check if port 8090 is already in use: `lsof -i :8090`
 - Verify Docker daemon is running
 - Check logs: `docker-compose logs jupyterhub`
 
@@ -175,10 +162,6 @@ Available images:
 - Monitor with `docker stats`
 - Consider limiting concurrent users
 
-**Authentication issues:**
-- Verify usernames in `allowed_users` list
-- Check password in configuration
-- Clear browser cookies and try again
 
 ### Useful Commands
 
