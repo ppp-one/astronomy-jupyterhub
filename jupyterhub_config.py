@@ -33,7 +33,7 @@ host_path = os.environ.get("JUPYTERHUB_HOST_PATH", os.getcwd())
 
 c.DockerSpawner.volumes = {
     f"{host_path}/notebooks": {
-        "bind": "/home/jovyan/example_notebooks",
+        "bind": "/home/jovyan/read_only_example_notebooks",
         "mode": "ro",
     },
     f"{host_path}/data": {
