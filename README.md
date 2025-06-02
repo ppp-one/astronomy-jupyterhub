@@ -18,7 +18,7 @@ A Docker-based JupyterHub instance designed for astronomy education where studen
 
 - Docker and Docker Compose installed
 - At least 4GB RAM available (8GB+ recommended for FITS processing)
-- Port 8000 available
+- Port 8090 available
 
 ### 1. Clone and Setup
 
@@ -35,7 +35,7 @@ docker-compose up -d
 
 ### 3. Access JupyterHub
 
-Open your browser and navigate to: `http://localhost:8000`
+Open your browser and navigate to: `http://localhost:8090`
 
 **For Students:**
 - Click "Sign up" to create your own account
@@ -44,7 +44,7 @@ Open your browser and navigate to: `http://localhost:8000`
 
 **For Instructors:**
 - Create admin accounts for 'instructor' usernames
-- Access admin panel at: http://localhost:8000/hub/admin
+- Access admin panel at: http://localhost:8090/hub/admin
 
 **For Students:**
 - Click "Sign up" to create a new account
