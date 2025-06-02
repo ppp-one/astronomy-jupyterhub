@@ -12,7 +12,7 @@ services:
     build: .
     container_name: jupyterhub
     ports:
-      - "8000:8000"
+      - "8090:8000"
     volumes:
       - ./jupyterhub_config.py:/srv/jupyterhub/jupyterhub_config.py
       - ./notebooks:/srv/jupyterhub/notebooks:ro
