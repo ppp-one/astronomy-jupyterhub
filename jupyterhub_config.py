@@ -33,7 +33,7 @@ host_path = os.environ.get("JUPYTERHUB_HOST_PATH", os.getcwd())
 
 c.DockerSpawner.volumes = {
     f"{host_path}/notebooks": {
-        "bind": "/home/jovyan/templates",
+        "bind": "/home/jovyan/example_notebooks",
         "mode": "ro",
     },
     f"{host_path}/data": {
@@ -56,7 +56,7 @@ c.DockerSpawner.notebook_dir = "/home/jovyan"
 
 # Memory and CPU limits
 c.DockerSpawner.mem_limit = "8G"
-c.DockerSpawner.cpu_limit = 2.0
+c.DockerSpawner.cpu_limit = 3.0
 
 # Authentication - Using NativeAuthenticator for secure self-registration
 c.JupyterHub.authenticator_class = NativeAuthenticator
@@ -105,15 +105,9 @@ c.DockerSpawner.debug = True
 
 # In your jupyterhub_config.py, add these lines:
 c.DockerSpawner.environment = {
-    'JUPYTER_RUNTIME_DIR': '/tmp/jupyter-runtime',
-    'JUPYTER_DATA_DIR': '/tmp/jupyter-data',
+    "JUPYTER_RUNTIME_DIR": "/tmp/jupyter-runtime",
+    "JUPYTER_DATA_DIR": "/tmp/jupyter-data",
 }
-
-c.DockerSpawner.pre_spawn_cmd = [
-    'sh', '-c', 
-    'mkdir -p /tmp/jupyter-runtime /tmp/jupyter-data && '
-    'chmod 755 /tmp/jupyter-runtime /tmp/jupyter-data'
-]
 
 
 # Alternative version with more robust Windows permissions handling
@@ -122,15 +116,15 @@ def pre_spawn_hook(spawner):
     import os
     import stat
     import platform
-    
+
     username = spawner.user.name
-    
+
     # Platform-specific path handling
     if platform.system() == "Windows":
         work_dir = os.path.join("C:", "srv", "jupyterhub", "student_work", username)
     else:
         work_dir = f"/srv/jupyterhub/student_work/{username}"
-    
+
     # Create the student's work directory if it doesn't exist
     try:
         os.makedirs(work_dir, exist_ok=True)
@@ -138,35 +132,41 @@ def pre_spawn_hook(spawner):
     except Exception as e:
         spawner.log.error(f"Failed to create work directory {work_dir}: {e}")
         return
-    
+
     # Set permissions based on platform
     try:
         if platform.system() == "Windows":
             # For Windows, we can try to use the subprocess module to set permissions
             # using icacls (if more granular control is needed)
             import subprocess
+
             try:
                 # Grant full control to the current user
                 # This is optional and may require admin privileges
-                subprocess.run([
-                    "icacls", work_dir, "/grant", f"{os.getlogin()}:(F)"
-                ], check=False, capture_output=True)
+                subprocess.run(
+                    ["icacls", work_dir, "/grant", f"{os.getlogin()}:(F)"],
+                    check=False,
+                    capture_output=True,
+                )
                 spawner.log.info(f"Set Windows permissions for: {work_dir}")
             except Exception as icacls_error:
-                spawner.log.debug(f"Could not set Windows ACL permissions: {icacls_error}")
+                spawner.log.debug(
+                    f"Could not set Windows ACL permissions: {icacls_error}"
+                )
         else:
             # Unix-style permissions
             os.chmod(
                 work_dir,
-                stat.S_IRWXU | stat.S_IRGRP | stat.S_IXGRP | stat.S_IROTH | stat.S_IXOTH,
+                stat.S_IRWXU
+                | stat.S_IRGRP
+                | stat.S_IXGRP
+                | stat.S_IROTH
+                | stat.S_IXOTH,
             )
             spawner.log.info(f"Set Unix permissions for: {work_dir}")
     except Exception as e:
         spawner.log.warning(f"Could not set permissions on {work_dir}: {e}")
         # Directory still exists and should be usable even without explicit permissions
 
-c.DockerSpawner.pre_spawn_hook = pre_spawn_hook
 
-# Logging
-c.JupyterHub.log_level = "INFO"
-c.DockerSpawner.log_level = "INFO"
+c.DockerSpawner.pre_spawn_hook = pre_spawn_hook
