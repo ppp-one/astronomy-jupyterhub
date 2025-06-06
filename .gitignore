@@ -146,14 +146,12 @@ $RECYCLE.BIN/
 
 # Keep data Folder but not files in it
 # Ignore all files and subfolders in data/
-data2/*
-data2/**
+data/*
+data/**
 
 # But not the folder itself and not .gitkeep
-!data2/
-!data2/.gitkeep
-
-data/images
+!data/
+!data/.gitkeep
 
 # Logs and Monitoring
 logs/
