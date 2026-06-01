@@ -16,24 +16,13 @@ USER jovyan
 
 # Install essential Python data science libraries (minimal set)
 RUN pip install --no-cache-dir \
+    eloy \
+    cabaret \
     numpy \
-    pandas \
     matplotlib \
-    astropy \
-    scipy \
-    photutils \
-    batman-package \
-    psutil \
     tqdm  \
-    celerite2 \
-    seaborn \
     jupyter \
     ipywidgets
-
-# Install prose library from GitHub (with dependencies first, then fresh session install)
-WORKDIR /tmp_prose
-RUN git clone https://github.com/ppp-one/prose.git
-RUN pip install -qq -e prose
 
 COPY ./notebooks /tmp_notebooks
 
