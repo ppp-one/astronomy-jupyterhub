@@ -9,7 +9,7 @@ from photutils.detection import DAOStarFinder
 
 def find_files(target):
     print(f"Finding files for target '{target}'...\n")
-    files = glob(f"../data/{target}/**/*.fits", recursive=True)
+    files = glob(f"data/{target}/**/*.fits", recursive=True)
     image_paths = {
         "light": {
             "RP": [],
