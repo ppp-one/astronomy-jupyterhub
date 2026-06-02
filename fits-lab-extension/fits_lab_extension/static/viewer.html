@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FITS Viewer</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background: #fff;
+      color: #333;
+      font-family: Arial, sans-serif;
+      font-size: 12px;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      body {
+        background: #1e1e1e;
+        color: #ccc;
+      }
+    }
+
+    #viewer {
+      width: 100vw;
+      height: 100vh;
+    }
+
+    #message {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-family: Arial, sans-serif;
+      opacity: 0.7;
+      text-align: center;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="viewer"></div>
+  <div id="message"></div>
+
+  <!-- D3 must load (as a classic script, setting window.d3) before the viewer module. -->
+  <script src="d3.v7.min.js"></script>
+  <script type="module">
+    import { FITSViewer } from './lib/fits-viewer.js';
+
+    const message = document.getElementById('message');
+    const mq = window.matchMedia('(prefers-color-scheme: dark)');
+
+    function themeColors(dark) {
+      return dark
+        ? { profileColor: 'rgba(160,160,160,0.85)', gridColor: '#cccccc' }
+        : { profileColor: 'rgba(0,80,200,0.85)', gridColor: '#333333' };
+    }
+
+    const viewer = new FITSViewer(document.getElementById('viewer'), {
+      onOpenExternal: (url) => window.open(url, '_blank'),
+      ...themeColors(mq.matches),
+    });
+
+    mq.addEventListener('change', (e) => {
+      Object.assign(viewer.options, themeColors(e.matches));
+      viewer._updateColor();
+    });
+
+    // Resolve the Jupyter server base URL from our own location.
+    // We are served at  <base>/fits-lab-extension/static/viewer.html
+    // so files live at  <base>/files/<path>
+    function fileUrl(path) {
+      const base = window.location.pathname.split('/fits-lab-extension/')[0];
+      return base + '/files/' + path.split('/').map(encodeURIComponent).join('/');
+    }
+
+    async function loadPath(path) {
+      if (!path) {
+        message.textContent = 'No file specified.';
+        return;
+      }
+      message.textContent = 'Loading ' + path + ' …';
+      try {
+        const response = await fetch(fileUrl(path), { credentials: 'same-origin' });
+        if (!response.ok) {
+          throw new Error('HTTP ' + response.status + ' ' + response.statusText);
+        }
+        const buffer = await response.arrayBuffer();
+        const name = path.split('/').pop();
+        await viewer.loadFromArrayBuffer(buffer, name);
+        message.textContent = '';
+      } catch (err) {
+        message.textContent = 'Failed to load ' + path + ': ' + err.message;
+        console.error(err);
+      }
+    }
+
+    const params = new URLSearchParams(window.location.search);
+    loadPath(params.get('path'));
+
+    // Allow the host (labextension) to request a reload after a file change.
+    window.addEventListener('message', (event) => {
+      const msg = event.data || {};
+      if (msg.command === 'loadPath') {
+        loadPath(msg.path);
+      }
+    });
+  </script>
+</body>
+
+</html>

@@ -24,6 +24,17 @@ RUN pip install --no-cache-dir \
     jupyter \
     ipywidgets
 
+# Node.js is required to build the FITS viewer labextension
+RUN mamba install -y -c conda-forge nodejs && mamba clean -afy
+
+# Install the FITS viewer (file-browser labextension + inline `show()` helper).
+# `pip install` triggers the JupyterLab build via hatch-jupyter-builder and
+# auto-enables the bundled Jupyter Server extension.
+COPY --chown=jovyan:users ./fits-lab-extension /tmp/fits-lab-extension
+RUN pip install --no-cache-dir /tmp/fits-lab-extension \
+    && jupyter labextension list \
+    && jupyter server extension list
+
 COPY ./notebooks /tmp_notebooks
 
 # Ensure the notebook server starts in the correct directory

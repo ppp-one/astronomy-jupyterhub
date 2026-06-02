@@ -1,0 +1,17 @@
+node_modules/
+.yarn/
+.pnp.*
+yarn.lock
+# TypeScript build output (anchored to repo root so it does NOT match
+# fits_lab_extension/static/lib/, which ships in the package).
+/lib/
+tsconfig.tsbuildinfo
+*.tsbuildinfo
+fits_lab_extension/labextension/
+fits_lab_extension/_version.py
+__pycache__/
+*.py[cod]
+.ipynb_checkpoints/
+*.egg-info/
+dist/
+build/

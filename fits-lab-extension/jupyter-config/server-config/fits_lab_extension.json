@@ -1,0 +1,7 @@
+{
+  "ServerApp": {
+    "jpserver_extensions": {
+      "fits_lab_extension": true
+    }
+  }
+}
